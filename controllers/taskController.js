@@ -1,8 +1,8 @@
-const Task = require("../models/taskSchema");
+import Task from "../models/taskSchema.js";
 
 const getTasks = async (req, res) => {
   try {
-    const tasks = await Task.find();
+    const tasks = await Task.find({ user: req.user._id });
     res.json(tasks);
   } catch (error) {
     console.error("Error fetching tasks:", error);
@@ -12,7 +12,11 @@ const getTasks = async (req, res) => {
 
 const AddTask = async (req, res) => {
   try {
-    const newTask = new Task({ task: req.body.task, isCompleted: false });
+    const newTask = new Task({
+      task: req.body.task,
+      isCompleted: false,
+      user: req.user._id,
+    });
     await newTask.save();
     res.status(201).json({ message: "Task added successfully", task: newTask });
   } catch (error) {
@@ -51,9 +55,4 @@ const updateTask = async (req, res) => {
   }
 };
 
-module.exports = {
-  getTasks,
-  AddTask,
-  deleteTask,
-  updateTask,
-};
+export { getTasks, AddTask, deleteTask, updateTask };
